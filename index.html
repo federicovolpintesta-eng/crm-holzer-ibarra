@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM LegalTech - Estudio Jurídico Holzer & Ibarra</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  
+  <!-- Google Fonts: Inter (UI) y Lora (Legal) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome 6.4.0 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- SortableJS para Drag and Drop de Kanban -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  
+  <!-- Chart.js para Métricas y Gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- SheetJS para Exportación a Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  
+  <!-- Estilos del CRM -->
+  <link rel="stylesheet" href="css/crm.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       SECCIÓN DE AUTENTICACIÓN / LOGIN
+       ========================================================================== -->
+  <div id="loginSection" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #0A1F35 0%, #030A12 100%); padding: 20px;">
+    <div style="background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(16px); padding: 48px 40px; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); width: 100%; max-width: 440px; text-align: center;">
+      <img src="assets/logo-nav.png" alt="Holzer & Ibarra" style="height: 55px; margin-bottom: 20px;" onerror="this.style.display='none'">
+      <h2 style="font-family: var(--font-serif); color: #0A1F35; font-size: 1.8rem; margin-bottom: 6px;">Portal Jurídico</h2>
+      <p style="color: #64748B; font-size: 0.9rem; margin-bottom: 28px;">Gestión de Expedientes & Práctica Profesional</p>
+      
+      <!-- Botón de Acceso Rápido para Demostración -->
+      <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 14px; margin-bottom: 24px; text-align: left;">
+        <div style="display: flex; align-items: center; gap: 8px; color: #166534; font-weight: 700; font-size: 0.85rem; margin-bottom: 6px;">
+          <i class="fas fa-bolt" style="color: #EAB308;"></i> Modo Demostración Inmediato
+        </div>
+        <p style="font-size: 0.78rem; color: #15803D; margin-bottom: 10px;">Para presentar el CRM en tu entrevista laboral sin demoras de login.</p>
+        <button id="btnQuickDemoLogin" class="btn btn-gold w-100" style="padding: 9px; font-size: 0.85rem;">
+          <i class="fas fa-play"></i> Ingresar con Casos de Prueba (Santa Fe)
+        </button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+        <div style="flex: 1; height: 1px; background: #E2E8F0;"></div>
+        <span style="font-size: 0.75rem; color: #94A3B8; font-weight: 600; text-transform: uppercase;">O acceso letrado</span>
+        <div style="flex: 1; height: 1px; background: #E2E8F0;"></div>
+      </div>
+      
+      <form id="loginForm">
+        <div style="margin-bottom: 16px; text-align: left;">
+          <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px;">Correo Electrónico</label>
+          <input type="email" id="loginEmail" class="form-input" style="width: 100%;" required placeholder="admin@holzeribarra.com">
+        </div>
+        <div style="margin-bottom: 20px; text-align: left;">
+          <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px;">Contraseña</label>
+          <input type="password" id="loginPassword" class="form-input" style="width: 100%;" required placeholder="••••••••">
+        </div>
+        <div id="loginError" style="display:none; background:#FEF2F2; color:#B91C1C; padding:10px 14px; border-radius:8px; font-size:0.85rem; margin-bottom:16px; text-align:left;"></div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Ingresar al Panel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       APLICACIÓN PRINCIPAL (CRM DASHBOARD)
+       ========================================================================== -->
+  <div id="dashboardSection" class="app-layout" style="display: none;">
+    
+    <!-- SIDEBAR DE NAVEGACIÓN -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="assets/logo-nav.png" alt="Logo" class="sidebar-brand-logo" onerror="this.style.display='none'">
+        <div class="sidebar-brand-text">
+          <h1>HOLZER & IBARRA</h1>
+          <span>Estudio Jurídico</span>
+        </div>
+      </div>
+      
+      <div class="sidebar-nav">
+        <div class="nav-section-title">Gestión Principal</div>
+        <a class="nav-item active" data-view="view-dashboard">
+          <i class="fas fa-chart-pie"></i>
+          <span>Dashboard General</span>
+        </a>
+        <a class="nav-item" data-view="view-expedientes">
+          <i class="fas fa-folder-open"></i>
+          <span>Expedientes & Clientes</span>
+          <span class="nav-badge" id="sideBadgeExpedientes">0</span>
+        </a>
+        <a class="nav-item" data-view="view-kanban">
+          <i class="fas fa-columns"></i>
+          <span>Tablero Procesal</span>
+        </a>
+        <a class="nav-item" data-view="view-agenda">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Agenda & Plazos</span>
+          <span class="nav-badge" id="sideBadgeVencimientos" style="display:none;">0</span>
+        </a>
+        
+        <div class="nav-section-title">Herramientas Operativas</div>
+        <a class="nav-item" data-view="view-finanzas">
+          <i class="fas fa-coins"></i>
+          <span>Finanzas & Recibos</span>
+        </a>
+        <a class="nav-item" data-view="view-calculadora">
+          <i class="fas fa-calculator"></i>
+          <span>Calculadora JUS & ART</span>
+        </a>
+        <a class="nav-item" data-view="view-escritos">
+          <i class="fas fa-file-contract"></i>
+          <span>Generador de Escritos</span>
+        </a>
+        <a class="nav-item" data-view="view-directorio">
+          <i class="fas fa-address-book"></i>
+          <span>Directorio de Clientes</span>
+        </a>
+
+        <div style="margin-top: auto; padding: 10px 0;">
+          <button id="btnSeedDemoData" class="btn btn-gold" style="width: 100%; font-size: 0.78rem; padding: 8px 12px; gap: 6px;">
+            <i class="fas fa-magic"></i> Cargar Casos Demo (SF)
+          </button>
+        </div>
+      </div>
+      
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <img src="assets/luciano.png" alt="Abogado" class="user-avatar" id="sidebarAvatar" onerror="this.src='https://ui-avatars.com/api/?name=Holzer+Ibarra&background=C5A059&color=fff'">
+          <div class="user-info">
+            <div class="user-name" id="userEmailSpan">Dr. Luciano Holzer</div>
+            <div class="user-role">Abogado Matriculado</div>
+          </div>
+          <button id="btnLogout" class="btn-icon" style="width: 28px; height: 28px; background: transparent; border: none; color: #94A3B8;" title="Cerrar Sesión">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- WRAPPER CENTRAL (TOPBAR + CONTENIDO) -->
+    <div class="main-wrapper">
+      
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="globalSearchInput" placeholder="Buscar por cliente, CUIJ, DNI, teléfono o área...">
+            <span class="search-shortcut">⌘K</span>
+          </div>
+        </div>
+        
+        <div class="topbar-right">
+          <!-- Selector rápido de Profesional Activo -->
+          <select id="activeLawyerFilter" class="form-select" style="padding: 7px 12px; font-size: 0.82rem; height: 38px;">
+            <option value="Todos">Vista de Todo el Estudio</option>
+            <option value="Luciano Holzer">Dr. Luciano Holzer</option>
+            <option value="Ma. Eugenia Ibarra">Dra. Ma. Eugenia Ibarra</option>
+            <option value="Equipo">Equipo General</option>
+          </select>
+
+          <!-- Botón Notificaciones -->
+          <div style="position: relative;">
+            <button id="btnNotifToggle" class="btn-icon" title="Vencimientos y Alertas">
+              <i class="fas fa-bell"></i>
+              <span id="topNotifBadge" class="notif-badge-pill" style="display:none;">0</span>
+            </button>
+            <!-- Dropdown Notificaciones -->
+            <div id="topNotifDropdown" class="notif-dropdown">
+              <div class="notif-header">
+                <h4>Vencimientos & Tareas</h4>
+                <span id="notifCountLabel" style="font-size: 0.75rem; background: var(--blue-light); color: var(--blue); padding: 2px 8px; border-radius: 10px; font-weight: 700;">0 hoy</span>
+              </div>
+              <div class="notif-body" id="notifListContainer">
+                <div style="padding: 24px 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                  No hay vencimientos fijados para hoy.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modo Oscuro -->
+          <button id="btnToggleDark" class="btn-icon" title="Alternar Modo Oscuro">
+            <i class="fas fa-moon"></i>
+          </button>
+
+          <!-- Botón Nuevo Expediente -->
+          <button id="btnOpenNewCaseModal" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Expediente
+          </button>
+        </div>
+      </header>
+
+      <!-- ÁREA DE CONTENIDO DINÁMICO -->
+      <main class="content-area">
+        
+        <!-- ====================================================================
+             VISTA 1: DASHBOARD GENERAL
+             ==================================================================== -->
+        <div id="view-dashboard" class="view-container active">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Panel Ejecutivo</h2>
+              <p>Métricas operativas y financieras del estudio jurídico en tiempo real</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-secondary" id="btnRefreshDashboard"><i class="fas fa-sync-alt"></i> Actualizar</button>
+              <button class="btn btn-gold" onclick="window.switchView('view-expedientes')"><i class="fas fa-list"></i> Ver Expedientes</button>
+            </div>
+          </div>
+
+          <!-- FILA DE KPIS -->
+          <div class="kpis-grid">
+            <div class="kpi-card">
+              <div class="kpi-icon-box kpi-icon-blue"><i class="fas fa-folder-open"></i></div>
+              <div class="kpi-content">
+                <div class="kpi-label">Expedientes Activos</div>
+                <div class="kpi-value" id="kpiActivos">0</div>
+                <div class="kpi-subtext" id="kpiActivosSub">0 en trámite judicial</div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box kpi-icon-rose"><i class="fas fa-clock"></i></div>
+              <div class="kpi-content">
+                <div class="kpi-label">Vencimientos 48hs</div>
+                <div class="kpi-value" id="kpiUrgencias">0</div>
+                <div class="kpi-subtext" style="color: var(--rose);">Plazos perentorios</div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box kpi-icon-gold"><i class="fas fa-file-invoice-dollar"></i></div>
+              <div class="kpi-content">
+                <div class="kpi-label">Honorarios Acordados</div>
+                <div class="kpi-value" id="kpiHonorarios">$0</div>
+                <div class="kpi-subtext">Total cartera activa</div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box kpi-icon-emerald"><i class="fas fa-hand-holding-usd"></i></div>
+              <div class="kpi-content">
+                <div class="kpi-label">Cobrado a la Fecha</div>
+                <div class="kpi-value" id="kpiCobrado" style="color: var(--emerald);">$0</div>
+                <div class="kpi-subtext" id="kpiPorcentajeCobrado">0% de efectividad</div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box kpi-icon-amber"><i class="fas fa-exclamation-circle"></i></div>
+              <div class="kpi-content">
+                <div class="kpi-label">Saldo por Cobrar</div>
+                <div class="kpi-value" id="kpiPendiente" style="color: var(--amber-dark);">$0</div>
+                <div class="kpi-subtext">Créditos de honorarios</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GRÁFICOS Y ANALÍTICA -->
+          <div class="charts-grid">
+            <div class="chart-card chart-card-sm">
+              <div class="chart-header">
+                <h3>Expedientes por Área</h3>
+              </div>
+              <div class="chart-canvas-wrapper">
+                <canvas id="chartAreas"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card chart-card-sm">
+              <div class="chart-header">
+                <h3>Estado Procesal</h3>
+              </div>
+              <div class="chart-canvas-wrapper">
+                <canvas id="chartEstados"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card chart-card-sm">
+              <div class="chart-header">
+                <h3>Carga por Profesional</h3>
+              </div>
+              <div class="chart-canvas-wrapper">
+                <canvas id="chartAbogados"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card chart-card-full">
+              <div class="chart-header">
+                <h3>Balance Financiero de Honorarios</h3>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Cobrado vs Saldo Pendiente por Especialidad</span>
+              </div>
+              <div class="chart-canvas-wrapper" style="height: 260px;">
+                <canvas id="chartFinanzas"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             VISTA 2: EXPEDIENTES & CLIENTES (TABLA AVANZADA)
+             ==================================================================== -->
+        <div id="view-expedientes" class="view-container">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Gestión de Expedientes</h2>
+              <p>Seguimiento integral de causas, CUIJs, radicaciones y plazos</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button id="btnExportExcel" class="btn btn-secondary"><i class="fas fa-file-excel" style="color: #107C41;"></i> Exportar Excel</button>
+              <button class="btn btn-primary" onclick="document.getElementById('newCaseModal').style.display='flex'"><i class="fas fa-plus"></i> Nuevo Expediente</button>
+            </div>
+          </div>
+
+          <!-- BARRA DE FILTROS -->
+          <div class="table-filters-bar">
+            <div class="filters-group">
+              <select id="filterTableEstado" class="form-select">
+                <option value="Todos">Todos los Estados</option>
+                <option value="Nuevo">Nuevo / Recepción</option>
+                <option value="En analisis">En Análisis</option>
+                <option value="Negociacion">Negociación Prejudicial</option>
+                <option value="En proceso">En Trámite Judicial</option>
+                <option value="Cerrado">Sentencia / Cerrado</option>
+              </select>
+
+              <select id="filterTableArea" class="form-select">
+                <option value="Todos">Todas las Áreas</option>
+                <option value="Amparo de Salud">Amparo de Salud</option>
+                <option value="Accidente Laboral / ART">Accidente Laboral / ART</option>
+                <option value="Derecho de Familia">Derecho de Familia</option>
+                <option value="Sucesiones">Sucesiones</option>
+                <option value="Derecho Civil">Derecho Civil</option>
+              </select>
+
+              <select id="filterTableAbogado" class="form-select">
+                <option value="Todos">Todos los Letrados</option>
+                <option value="Luciano Holzer">Dr. Luciano Holzer</option>
+                <option value="Ma. Eugenia Ibarra">Dra. Ma. Eugenia Ibarra</option>
+                <option value="Equipo">Equipo</option>
+              </select>
+
+              <select id="filterTableUrgencia" class="form-select">
+                <option value="Todos">Todos los Vencimientos</option>
+                <option value="Urgente">Urgentes (Próximas 48hs)</option>
+                <option value="ConTarea">Con Plazo / Tarea</option>
+                <option value="SinTarea">Sin Plazo Fijado</option>
+              </select>
+            </div>
+
+            <div style="font-size: 0.85rem; color: var(--text-muted);">
+              Mostrando <strong id="tableCounter">0</strong> expedientes
+            </div>
+          </div>
+
+          <!-- TABLA -->
+          <div class="table-card">
+            <div style="overflow-x: auto;">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Fecha Ingreso</th>
+                    <th>Carátula / Cliente</th>
+                    <th>CUIJ / N° Expte</th>
+                    <th>Área & Fuero</th>
+                    <th>Profesional</th>
+                    <th>Próximo Plazo</th>
+                    <th>Estado</th>
+                    <th>Honorarios</th>
+                    <th style="text-align: right;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tableExpedientesBody">
+                  <!-- Filas dinámicas -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             VISTA 3: TABLERO PROCESAL (KANBAN)
+             ==================================================================== -->
+        <div id="view-kanban" class="view-container">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Tablero Procesal de Causas</h2>
+              <p>Arrastra los expedientes para actualizar su etapa procesal</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-primary" onclick="document.getElementById('newCaseModal').style.display='flex'"><i class="fas fa-plus"></i> Nuevo Caso</button>
+            </div>
+          </div>
+
+          <div class="kanban-board">
+            <!-- Columna 1: Nuevo / Recepción -->
+            <div class="kanban-column" data-status="Nuevo">
+              <div class="kanban-col-header">
+                <div class="kanban-col-title">
+                  <i class="fas fa-inbox" style="color: #3B82F6;"></i> Nuevo / Recepción
+                </div>
+                <span class="kanban-col-count" id="kbCount-Nuevo">0</span>
+              </div>
+              <div class="kanban-cards-container" id="kbCol-Nuevo"></div>
+            </div>
+
+            <!-- Columna 2: En Análisis -->
+            <div class="kanban-column" data-status="En analisis">
+              <div class="kanban-col-header">
+                <div class="kanban-col-title">
+                  <i class="fas fa-search" style="color: #F59E0B;"></i> En Análisis & Prueba
+                </div>
+                <span class="kanban-col-count" id="kbCount-Enanalisis">0</span>
+              </div>
+              <div class="kanban-cards-container" id="kbCol-Enanalisis"></div>
+            </div>
+
+            <!-- Columna 3: Negociación Prejudicial -->
+            <div class="kanban-column" data-status="Negociacion">
+              <div class="kanban-col-header">
+                <div class="kanban-col-title">
+                  <i class="fas fa-handshake" style="color: #8B5CF6;"></i> Instancia Prejudicial
+                </div>
+                <span class="kanban-col-count" id="kbCount-Negociacion">0</span>
+              </div>
+              <div class="kanban-cards-container" id="kbCol-Negociacion"></div>
+            </div>
+
+            <!-- Columna 4: En Trámite Judicial -->
+            <div class="kanban-column" data-status="En proceso">
+              <div class="kanban-col-header">
+                <div class="kanban-col-title">
+                  <i class="fas fa-gavel" style="color: #2563EB;"></i> En Trámite Judicial
+                </div>
+                <span class="kanban-col-count" id="kbCount-Enproceso">0</span>
+              </div>
+              <div class="kanban-cards-container" id="kbCol-Enproceso"></div>
+            </div>
+
+            <!-- Columna 5: Sentencia / Cerrado -->
+            <div class="kanban-column" data-status="Cerrado">
+              <div class="kanban-col-header">
+                <div class="kanban-col-title">
+                  <i class="fas fa-check-circle" style="color: #10B981;"></i> Sentencia / Concluido
+                </div>
+                <span class="kanban-col-count" id="kbCount-Cerrado">0</span>
+              </div>
+              <div class="kanban-cards-container" id="kbCol-Cerrado"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             VISTA 4: AGENDA JUDICIAL & PLAZOS
+             ==================================================================== -->
+        <div id="view-agenda" class="view-container">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Agenda Judicial & Vencimientos</h2>
+              <p>Calendario procesal de términos, audiencias testimoniales y pericias</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-secondary" id="btnAgendaToday"><i class="fas fa-calendar-day"></i> Hoy</button>
+              <button class="btn btn-primary" id="btnQuickAddEvent"><i class="fas fa-plus"></i> Agendar Plazo</button>
+            </div>
+          </div>
+
+          <div class="calendar-card">
+            <div class="calendar-nav">
+              <button id="btnCalPrev" class="btn btn-secondary"><i class="fas fa-chevron-left"></i> Anterior</button>
+              <h3 id="calMonthYearLabel">Octubre 2026</h3>
+              <button id="btnCalNext" class="btn btn-secondary">Siguiente <i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div class="calendar-days-header">
+              <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+            </div>
+
+            <div class="calendar-grid-cells" id="calendarGridCells">
+              <!-- Celdas inyectadas por JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             VISTA 5: FINANZAS & RECIBOS
+             ==================================================================== -->
+        <div id="view-finanzas" class="view-container">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Control de Honorarios & Aportes</h2>
+              <p>Liquidación de honorarios, cálculo de aportes Caja Forense y recibos oficiales</p>
+            </div>
+          </div>
+
+          <div class="kpis-grid" style="margin-bottom: 24px;">
+            <div class="kpi-card">
+              <div class="kpi-icon-box kpi-icon-gold"><i class="fas fa-money-check-alt"></i></div>
+              <div class="kpi-content">
+                <div class="kpi-label">Honorarios Facturados</div>
+                <div class="kpi-value" id="finTotalHonorarios">$0</div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box kpi-icon-emerald"><i class="fas fa-receipt"></i></div>
+              <div class="kpi-content">
+                <div class="kpi-label">Cobranza Percibida</div>
+                <div class="kpi-value" id="finTotalCobrado" style="color: var(--emerald);">$0</div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box kpi-icon-rose"><i class="fas fa-user-clock"></i></div>
+              <div class="kpi-content">
+                <div class="kpi-label">Saldo Pendiente de Cobro</div>
+                <div class="kpi-value" id="finTotalSaldo" style="color: var(--rose);">$0</div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box kpi-icon-blue"><i class="fas fa-balance-scale"></i></div>
+              <div class="kpi-content">
+                <div class="kpi-label">Aportes Caja Forense (29%)</div>
+                <div class="kpi-value" id="finTotalAportes">$0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div style="padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+              <h3 style="font-size: 1.1rem; font-weight: 700;">Estado de Cuentas por Expediente</h3>
+              <input type="text" id="searchFinanzas" class="form-input" placeholder="Filtrar por cliente..." style="max-width: 280px;">
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Cliente / Carátula</th>
+                    <th>Área</th>
+                    <th>Honorarios Acordados</th>
+                    <th>Pagos Recibidos</th>
+                    <th>Saldo Deudor</th>
+                    <th>Aportes (29%)</th>
+                    <th>Tasa de Justicia</th>
+                    <th style="text-align: right;">Emisión</th>
+                  </tr>
+                </thead>
+                <tbody id="tableFinanzasBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             VISTA 6: CALCULADORA JUDICIAL DE SANTA FE
+             ==================================================================== -->
+        <div id="view-calculadora" class="view-container">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Calculadora Judicial de Santa Fe</h2>
+              <p>Cálculo de Unidades JUS (Ley 12.851), intereses judiciales y estimador de ART</p>
+            </div>
+          </div>
+
+          <div class="calc-grid">
+            <!-- Tarjeta 1: Calculadora de Unidad JUS -->
+            <div class="calc-box">
+              <h3><i class="fas fa-gavel"></i> Conversor de Unidad JUS (Santa Fe)</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                Cálculo de honorarios mínimos legales vigentes en el Poder Judicial de la Provincia de Santa Fe.
+              </p>
+              
+              <div style="display: flex; gap: 12px; margin-bottom: 14px;">
+                <div style="flex: 1;">
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Valor de 1 JUS ($)</label>
+                  <input type="number" id="calcJusUnitValue" class="form-input" style="width: 100%;" value="85450">
+                </div>
+                <div style="flex: 1;">
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Cantidad de JUS</label>
+                  <input type="number" id="calcJusQuantity" class="form-input" style="width: 100%;" value="10">
+                </div>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Actuación Tipo (Ley 12.851)</label>
+                <select id="calcJusPreset" class="form-select" style="width: 100%;">
+                  <option value="custom">Personalizado</option>
+                  <option value="10">Demanda Ordinaria Mínima (10 JUS)</option>
+                  <option value="5">Contestación de Demanda (5 JUS)</option>
+                  <option value="3">Audiencia Testimonial / Absolución (3 JUS)</option>
+                  <option value="4">Incidente Procesal (4 JUS)</option>
+                  <option value="8">Medida Cautelar / Amparo de Salud (8 JUS)</option>
+                </select>
+              </div>
+
+              <div class="calc-result-box">
+                <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Honorario Mínimo Legal</div>
+                <div class="calc-result-value" id="calcJusTotalPesos">$854.500</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Aportes Caja Forense (29%): <strong id="calcJusAportes">$247.805</strong></div>
+              </div>
+            </div>
+
+            <!-- Tarjeta 2: Estimador de Indemnización ART / Ley 24.557 -->
+            <div class="calc-box">
+              <h3><i class="fas fa-user-injured"></i> Estimador de Indemnización ART</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                Fórmula de Incapacidad Laboral (53 × IBM × Incapacidad % × (65/Edad)).
+              </p>
+
+              <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                <div style="flex: 1;">
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Ingreso Base Mensual ($)</label>
+                  <input type="number" id="calcArtIBM" class="form-input" style="width: 100%;" value="450000">
+                </div>
+                <div style="flex: 1;">
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Edad del Trabajador</label>
+                  <input type="number" id="calcArtEdad" class="form-input" style="width: 100%;" value="38">
+                </div>
+              </div>
+
+              <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Porcentaje de Incapacidad Médica (%)</label>
+                <input type="number" id="calcArtIncapacidad" class="form-input" style="width: 100%;" value="18" max="100">
+              </div>
+
+              <div class="calc-result-box">
+                <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Indemnización Estimada Ley 24.557</div>
+                <div class="calc-result-value" id="calcArtTotal" style="color: var(--emerald);">$7.346.052</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">+ 20% adicional Ley 26.773 (accidente in itinere o lugar de trabajo)</div>
+              </div>
+            </div>
+
+            <!-- Tarjeta 3: Intereses Judiciales (Tasa Activa BNA) -->
+            <div class="calc-box" style="grid-column: 1 / -1;">
+              <h3><i class="fas fa-chart-line"></i> Cálculo de Actualización e Intereses Judiciales</h3>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 14px;">
+                <div>
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Capital Histórico de Condena ($)</label>
+                  <input type="number" id="calcIntCapital" class="form-input" style="width: 100%;" value="1000000">
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Fecha de Origen / Mora</label>
+                  <input type="date" id="calcIntFechaInicio" class="form-input" style="width: 100%;" value="2025-01-01">
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Tasa Anual Aplicable (%)</label>
+                  <input type="number" id="calcIntTasa" class="form-input" style="width: 100%;" value="72">
+                </div>
+              </div>
+
+              <div class="calc-result-box" style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 16px;">
+                  <div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Intereses Devengados</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--amber-dark);" id="calcIntIntereses">$0</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Total Liquidación Final</div>
+                    <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);" id="calcIntTotalFinal">$0</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             VISTA 7: GENERADOR DE ESCRITOS & MODELOS
+             ==================================================================== -->
+        <div id="view-escritos" class="view-container">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Generador de Escritos & Modelos Judiciales</h2>
+              <p>Modelos redactados con cláusulas procesales válidas para la Provincia de Santa Fe</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button id="btnCopyDocText" class="btn btn-secondary"><i class="fas fa-copy"></i> Copiar Texto</button>
+              <button id="btnDownloadWordDoc" class="btn btn-primary"><i class="fas fa-file-word"></i> Descargar Word Oficial (.doc)</button>
+              <button id="btnPrintDoc" class="btn btn-secondary"><i class="fas fa-print"></i> Imprimir</button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: flex-start;">
+            <!-- Controles del Escrito -->
+            <div class="calc-box">
+              <h4 style="margin-bottom: 14px; font-size: 1rem;"><i class="fas fa-cog"></i> Configurar Escrito</h4>
+              
+              <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Seleccionar Plantilla</label>
+                <select id="docTemplateSelect" class="form-select" style="width: 100%;">
+                  <option value="poder">Poder Especial Judicial para Juicio</option>
+                  <option value="carta_salud">Carta Documento - Intimación a Prepaga / Obra Social</option>
+                  <option value="carta_art">Carta Documento - Intimación Laboral a ART</option>
+                  <option value="amparo">Demanda de Amparo de Salud con Cautelar</option>
+                  <option value="cuota_litis">Convenio de Honorarios (Pacto de Cuota Litis)</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Completar con Expediente</label>
+                <select id="docLeadSelect" class="form-select" style="width: 100%;">
+                  <option value="">Seleccione un cliente para autocompletar...</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Nombre del Cliente</label>
+                <input type="text" id="docFieldNombre" class="form-input" style="width: 100%;" placeholder="Nombre completo">
+              </div>
+
+              <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                <div style="flex: 1;">
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">DNI</label>
+                  <input type="text" id="docFieldDNI" class="form-input" style="width: 100%;" placeholder="N° Documento">
+                </div>
+                <div style="flex: 1;">
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Domicilio</label>
+                  <input type="text" id="docFieldDomicilio" class="form-input" style="width: 100%;" placeholder="Calle y N°">
+                </div>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Contraparte / Demandado</label>
+                <input type="text" id="docFieldContraparte" class="form-input" style="width: 100%;" placeholder="Ej. OSDE / Prevención ART S.A.">
+              </div>
+
+              <button id="btnGenerateDocument" class="btn btn-gold w-100"><i class="fas fa-magic"></i> Regenerar Escrito</button>
+            </div>
+
+            <!-- Vista Previa del Documento -->
+            <div class="official-document-sheet" id="docPrintableArea">
+              <div class="doc-letterhead">
+                <h2>ESTUDIO JURÍDICO HOLZER & IBARRA</h2>
+                <p>La Rioja 2751, Santa Fe Capital | Tel: (0342) 423-1401 | contacto@holzeribarra.com</p>
+              </div>
+              <div id="docOutputContent" style="white-space: pre-wrap; font-size: 0.95rem; color: #1E293B;">
+                Cargando modelo de escrito...
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             VISTA 8: DIRECTORIO DE CLIENTES
+             ==================================================================== -->
+        <div id="view-directorio" class="view-container">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Directorio Telefónico & Contactos</h2>
+              <p>Comunicaciones rápidas por WhatsApp y canales formales con clientes</p>
+            </div>
+            <input type="text" id="searchDirectorio" class="form-input" placeholder="Buscar por nombre o teléfono..." style="min-width: 280px;">
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px;" id="directorioCardsContainer">
+            <!-- Tarjetas inyectadas por JS -->
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: FICHA 360° DEL EXPEDIENTE
+       ========================================================================== -->
+  <div id="caseModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-gold); font-weight: 700;" id="modalAreaBadge">Área Legal</div>
+          <h3 id="modalClientName">Carátula del Expediente</h3>
+          <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-top: 2px;" id="modalCUIJBadge">CUIJ: 21-01234567-9</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button id="btnDeleteCaseModal" class="btn btn-secondary btn-sm" style="background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.4);"><i class="fas fa-trash"></i></button>
+          <button class="modal-close" id="btnCloseCaseModal">&times;</button>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="modal-tabs">
+        <button class="modal-tab-btn active" data-tab="tab-general"><i class="fas fa-info-circle"></i> General & Radicación</button>
+        <button class="modal-tab-btn" data-tab="tab-actuaciones"><i class="fas fa-history"></i> Bitácora & Actuaciones</button>
+        <button class="modal-tab-btn" data-tab="tab-finanzas"><i class="fas fa-coins"></i> Honorarios & Pagos</button>
+        <button class="modal-tab-btn" data-tab="tab-comunicaciones"><i class="fas fa-paper-plane"></i> WhatsApp & Mensajería</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- TAB 1: GENERAL -->
+        <div id="tab-general" class="modal-tab-pane" style="display: block;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="calc-box" style="padding: 16px;">
+              <h4 style="margin-bottom: 12px; font-size: 0.9rem; color: var(--text-main);"><i class="fas fa-balance-scale"></i> Radicación Judicial</h4>
+              <div style="margin-bottom: 10px;">
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Juzgado / Fuero</label>
+                <input type="text" id="modalJuzgadoInput" class="form-input w-100" placeholder="Ej. Juzg. Civil y Com. 3ra Nom. Santa Fe">
+              </div>
+              <div style="margin-bottom: 10px;">
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Contraparte</label>
+                <input type="text" id="modalContraparteInput" class="form-input w-100" placeholder="Demandado / Aseguradora / ART">
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Letrado de la Contraparte</label>
+                <input type="text" id="modalAbogadoContraparteInput" class="form-input w-100" placeholder="Dr. Letrado Patrocinante">
+              </div>
+            </div>
+
+            <div class="calc-box" style="padding: 16px;">
+              <h4 style="margin-bottom: 12px; font-size: 0.9rem; color: var(--text-main);"><i class="fas fa-user-tie"></i> Asignación & Plazo</h4>
+              <div style="margin-bottom: 10px;">
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Profesional a Cargo</label>
+                <select id="modalAbogadoSelect" class="form-select w-100">
+                  <option value="Luciano Holzer">Dr. Luciano Holzer</option>
+                  <option value="Ma. Eugenia Ibarra">Dra. Ma. Eugenia Ibarra</option>
+                  <option value="Equipo">Equipo (General)</option>
+                </select>
+              </div>
+              <div style="margin-bottom: 10px;">
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Estado Procesal</label>
+                <select id="modalEstadoSelect" class="form-select w-100">
+                  <option value="Nuevo">Nuevo / Recepción</option>
+                  <option value="En analisis">En Análisis & Documentación</option>
+                  <option value="Negociacion">Instancia Prejudicial / Negociación</option>
+                  <option value="En proceso">En Trámite Judicial</option>
+                  <option value="Cerrado">Sentencia / Cerrado</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Próximo Plazo / Tarea</label>
+                <input type="text" id="modalTaskDesc" class="form-input w-100 mb-1" placeholder="Ej. Presentar alegatos...">
+                <input type="date" id="modalTaskDate" class="form-input w-100">
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 18px;" class="calc-box">
+            <h4 style="margin-bottom: 10px; font-size: 0.9rem; color: var(--text-main);"><i class="fas fa-id-card"></i> Datos del Cliente</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Teléfono / WhatsApp</label>
+                <input type="text" id="modalTelefonoInput" class="form-input w-100">
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Email</label>
+                <input type="email" id="modalEmailInput" class="form-input w-100">
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">DNI</label>
+                <input type="text" id="modalDNIInput" class="form-input w-100">
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Domicilio Real</label>
+                <input type="text" id="modalDomicilioInput" class="form-input w-100">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: ACTUACIONES & BITÁCORA -->
+        <div id="tab-actuaciones" class="modal-tab-pane" style="display: none;">
+          <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+            <select id="bitacoraTipoSelect" class="form-select" style="max-width: 180px;">
+              <option value="Escrito">Escrito Presentado</option>
+              <option value="Audiencia">Audiencia Judicial</option>
+              <option value="Cedula">Cédula de Notificación</option>
+              <option value="Resolucion">Resolución / Auto</option>
+              <option value="Pericia">Peritaje Médico / Contable</option>
+              <option value="Cliente">Reunión con Cliente</option>
+            </select>
+            <input type="text" id="bitacoraTextInput" class="form-input" style="flex:1;" placeholder="Detalle de la actuación procesal...">
+            <button id="btnAddBitacora" class="btn btn-primary"><i class="fas fa-plus"></i> Registrar</button>
+          </div>
+
+          <div id="bitacoraTimeline" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+            <!-- Hitos procesales -->
+          </div>
+        </div>
+
+        <!-- TAB 3: FINANZAS & PAGOS -->
+        <div id="tab-finanzas" class="modal-tab-pane" style="display: none;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
+            <div class="calc-box" style="padding: 16px;">
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">HONORARIOS ACORDADOS</label>
+              <input type="number" id="modalFinHonorarios" class="form-input w-100" style="font-size: 1.2rem; font-weight: 700; margin-top: 6px;" value="0">
+            </div>
+            <div class="calc-box" style="padding: 16px;">
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">TOTAL PERCIBIDO</label>
+              <input type="number" id="modalFinPagado" class="form-input w-100" style="font-size: 1.2rem; font-weight: 700; margin-top: 6px; color: var(--emerald);" value="0">
+            </div>
+            <div class="calc-box" style="padding: 16px; background: var(--bg-main);">
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">SALDO PENDIENTE</label>
+              <div id="modalFinSaldoCalculado" style="font-size: 1.4rem; font-weight: 800; color: var(--rose); margin-top: 6px;">$0</div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div class="calc-box" style="padding: 16px;">
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">APORTES CAJA FORENSE (29%)</label>
+              <input type="number" id="modalFinAportes" class="form-input w-100 mt-1" placeholder="Calculado automáticamente">
+            </div>
+            <div class="calc-box" style="padding: 16px;">
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">TASA DE JUSTICIA (49%)</label>
+              <input type="number" id="modalFinTasa" class="form-input w-100 mt-1" placeholder="Tasa judicial provincial">
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button id="btnEmitirReciboModal" class="btn btn-secondary"><i class="fas fa-file-invoice"></i> Generar Recibo de Pago</button>
+            <button id="btnSaveFinancesModal" class="btn btn-primary"><i class="fas fa-save"></i> Guardar Finanzas</button>
+          </div>
+        </div>
+
+        <!-- TAB 4: COMUNICACIONES -->
+        <div id="tab-comunicaciones" class="modal-tab-pane" style="display: none;">
+          <h4 style="margin-bottom: 14px;">Plantillas de Contacto Directo</h4>
+          <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+            <select id="modalWaPlantillaSelect" class="form-select" style="flex: 1;">
+              <option value="vencimiento">Aviso de Audiencia / Vencimiento</option>
+              <option value="documentacion">Solicitud Urgente de Documentación</option>
+              <option value="novedad">Novedad Procesal / Sentencia Favorable</option>
+              <option value="pago">Recordatorio de Saldo de Honorarios</option>
+            </select>
+            <button id="btnSendModalWa" class="btn btn-emerald" style="background: #25D366; color: white;"><i class="fab fa-whatsapp"></i> Enviar por WhatsApp</button>
+          </div>
+
+          <div style="background: var(--bg-main); padding: 16px; border-radius: 8px; border: 1px solid var(--border);">
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">VISTA PREVIA DEL MENSAJE</div>
+            <div id="modalWaPreviewText" style="font-size: 0.9rem; color: var(--text-main);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCancelCaseModal">Cerrar</button>
+        <button class="btn btn-primary" id="btnSaveCaseModal"><i class="fas fa-save"></i> Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: NUEVO EXPEDIENTE
+       ========================================================================== -->
+  <div id="newCaseModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3><i class="fas fa-folder-plus"></i> Ingresar Nuevo Expediente</h3>
+        <button class="modal-close" onclick="document.getElementById('newCaseModal').style.display='none'">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 4px;">Carátula / Nombre del Cliente *</label>
+          <input type="text" id="ncNombre" class="form-input w-100" required placeholder="Ej. GÓMEZ, MARTÍN c/ PREVENCIÓN ART S.A.">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+          <div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px;">CUIJ (N° Expediente)</label>
+            <input type="text" id="ncCUIJ" class="form-input w-100" placeholder="Ej. 21-02384912-4">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px;">Teléfono / WhatsApp</label>
+            <input type="text" id="ncTelefono" class="form-input w-100" placeholder="Ej. 3424123456">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+          <div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px;">Área / Fuero</label>
+            <select id="ncArea" class="form-select w-100">
+              <option value="Amparo de Salud">Amparo de Salud</option>
+              <option value="Accidente Laboral / ART">Accidente Laboral / ART</option>
+              <option value="Derecho de Familia">Derecho de Familia</option>
+              <option value="Sucesiones">Sucesiones</option>
+              <option value="Derecho Civil">Derecho Civil</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px;">Asignar a Letrado</label>
+            <select id="ncAbogado" class="form-select w-100">
+              <option value="Luciano Holzer">Dr. Luciano Holzer</option>
+              <option value="Ma. Eugenia Ibarra">Dra. Ma. Eugenia Ibarra</option>
+              <option value="Equipo">Equipo (General)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px;">Juzgado de Radicación</label>
+          <input type="text" id="ncJuzgado" class="form-input w-100" placeholder="Ej. Juzgado Laboral de la 1° Nominación de Santa Fe">
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px;">Síntesis / Objeto del Caso</label>
+          <textarea id="ncMensaje" class="form-input w-100" style="height: 70px; resize:none;" placeholder="Breve reseña del reclamo y hechos..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="document.getElementById('newCaseModal').style.display='none'">Cancelar</button>
+        <button id="btnSaveNewCase" class="btn btn-primary"><i class="fas fa-check"></i> Registrar Expediente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: RECIBO OFICIAL IMPRIMIBLE
+       ========================================================================== -->
+  <div id="receiptModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3><i class="fas fa-receipt"></i> Recibo Oficial de Honorarios</h3>
+        <button class="modal-close" onclick="document.getElementById('receiptModal').style.display='none'">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="receiptPrintArea" style="background:#fff; color:#0f172a; padding:30px; border:1px solid #cbd5e1; border-radius:8px; font-family:serif;">
+          <div style="text-align:center; border-bottom:2px solid #C5A059; padding-bottom:12px; margin-bottom:20px;">
+            <h2 style="margin:0; font-size:1.4rem; color:#0A1F35;">ESTUDIO JURÍDICO HOLZER & IBARRA</h2>
+            <div style="font-size:0.8rem; font-family:sans-serif; color:#64748B;">La Rioja 2751 - Santa Fe Capital | CUIT 20-33445566-9</div>
+          </div>
+          
+          <div style="display:flex; justify-content:space-between; margin-bottom:18px; font-family:sans-serif; font-size:0.9rem;">
+            <div><strong>Recibo N°:</strong> <span id="reciboNumero">0001-000042</span></div>
+            <div><strong>Fecha:</strong> <span id="reciboFecha">20/10/2026</span></div>
+          </div>
+
+          <div style="margin-bottom:14px; font-size:1rem; line-height:1.6;">
+            Recibimos del Sr./Sra. <strong id="reciboCliente">Gómez, Martín</strong>, DNI N° <span id="reciboDNI">28.450.120</span>, la suma de Pesos <strong id="reciboMontoTexto">CIENTO CINCUENTA MIL</strong> (<span id="reciboMontoNumero" style="font-weight:bold;">$150.000</span>) en concepto de <span id="reciboConcepto">anticipo de honorarios profesionales</span> en los autos caratulados "<span id="reciboCaratula">Gómez c/ Prevención ART</span>".
+          </div>
+
+          <div style="display:flex; justify-content:space-between; margin-top:40px; padding-top:20px; font-family:sans-serif; font-size:0.8rem;">
+            <div style="text-align:center; width:200px; border-top:1px solid #0f172a; padding-top:4px;">
+              Firma y Sello Letrado
+            </div>
+            <div style="text-align:center; width:200px; border-top:1px solid #0f172a; padding-top:4px;">
+              Conforme Cliente
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="document.getElementById('receiptModal').style.display='none'">Cerrar</button>
+        <button class="btn btn-primary" onclick="window.printReceipt()"><i class="fas fa-print"></i> Imprimir Recibo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT PRINCIPAL DEL CRM -->
+  <script type="module" src="js/crm.js"></script>
+</body>
+</html>
