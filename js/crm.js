@@ -422,12 +422,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 window.switchView = function(viewId) {
   document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-item').forEach(el => el.classList.remove('active'));
   
   const targetView = document.getElementById(viewId);
   const targetNav = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+  const targetBottom = document.querySelector(`.bottom-nav-item[data-view="${viewId}"]`);
   
   if (targetView) targetView.classList.add('active');
   if (targetNav) targetNav.classList.add('active');
+  if (targetBottom) targetBottom.classList.add('active');
 
   // Trigger re-renders según vista
   if (viewId === 'view-dashboard') renderDashboard();
@@ -444,6 +447,7 @@ function setupNavigation() {
   const backdrop = document.getElementById('sidebarBackdrop');
   const btnToggle = document.getElementById('btnMobileSidebarToggle');
   const btnClose = document.getElementById('btnMobileSidebarClose');
+  const btnBottomNavMenu = document.getElementById('btnBottomNavMenu');
 
   function openSidebar() {
     if (sidebar) sidebar.classList.add('open');
@@ -458,6 +462,7 @@ function setupNavigation() {
   if (btnToggle) btnToggle.addEventListener('click', openSidebar);
   if (btnClose) btnClose.addEventListener('click', closeSidebar);
   if (backdrop) backdrop.addEventListener('click', closeSidebar);
+  if (btnBottomNavMenu) btnBottomNavMenu.addEventListener('click', openSidebar);
 
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
@@ -466,6 +471,13 @@ function setupNavigation() {
       if (window.innerWidth <= 900) {
         closeSidebar();
       }
+    });
+  });
+
+  document.querySelectorAll('.bottom-nav-item[data-view]').forEach(item => {
+    item.addEventListener('click', () => {
+      const viewId = item.getAttribute('data-view');
+      if (viewId) window.switchView(viewId);
     });
   });
 }
@@ -627,7 +639,7 @@ function normalizeCaseRecord(item) {
 const btnSeedDemoData = document.getElementById('btnSeedDemoData');
 if (btnSeedDemoData) {
   btnSeedDemoData.addEventListener('click', async () => {
-    if (confirm("¿Restablecer las 12 causas judiciales de prueba con datos auténticos de Santa Fe?")) {
+    if (confirm("¿Sincronizar y recargar las causas judiciales del estudio?")) {
       currentCases = [...SANTA_FE_SAMPLE_CASES];
       localStorage.setItem('crm_local_cases', JSON.stringify(currentCases));
       
@@ -646,7 +658,7 @@ if (btnSeedDemoData) {
               profesional_asignado: c.profesional_asignado,
               mensaje: c.mensaje,
               estado: c.estado,
-              origen: 'Demo Santa Fe',
+              origen: 'Estudio Santa Fe',
               tag: c.tag,
               tarea: c.tarea,
               historial: c.historial,
@@ -660,14 +672,14 @@ if (btnSeedDemoData) {
             }]);
           }
           btnSeedDemoData.innerHTML = '<i class="fas fa-check"></i> ¡Sincronizado!';
-          setTimeout(() => btnSeedDemoData.innerHTML = '<i class="fas fa-database"></i> Restablecer Datos Demo', 2500);
+          setTimeout(() => btnSeedDemoData.innerHTML = '<i class="fas fa-sync-alt"></i> Sincronizar Base Judicial', 2500);
         }
       } catch (err) {
         console.log("Seed local guardado:", err);
       }
 
       updateAllViews();
-      alert("¡12 causas de prueba de Santa Fe cargadas con éxito! El CRM ahora tiene métricas, finanzas y agenda completas.");
+      alert("¡Causas judiciales cargadas con éxito! Las métricas, finanzas y agenda del estudio están actualizadas.");
     }
   });
 }
