@@ -440,10 +440,32 @@ window.switchView = function(viewId) {
 };
 
 function setupNavigation() {
+  const sidebar = document.getElementById('appSidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  const btnToggle = document.getElementById('btnMobileSidebarToggle');
+  const btnClose = document.getElementById('btnMobileSidebarClose');
+
+  function openSidebar() {
+    if (sidebar) sidebar.classList.add('open');
+    if (backdrop) backdrop.classList.add('active');
+  }
+
+  function closeSidebar() {
+    if (sidebar) sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('active');
+  }
+
+  if (btnToggle) btnToggle.addEventListener('click', openSidebar);
+  if (btnClose) btnClose.addEventListener('click', closeSidebar);
+  if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
       const viewId = item.getAttribute('data-view');
       if (viewId) window.switchView(viewId);
+      if (window.innerWidth <= 900) {
+        closeSidebar();
+      }
     });
   });
 }
@@ -605,7 +627,7 @@ function normalizeCaseRecord(item) {
 const btnSeedDemoData = document.getElementById('btnSeedDemoData');
 if (btnSeedDemoData) {
   btnSeedDemoData.addEventListener('click', async () => {
-    if (confirm("¿Cargar 12 causas judiciales de prueba con datos auténticos de Santa Fe?")) {
+    if (confirm("¿Restablecer las 12 causas judiciales de prueba con datos auténticos de Santa Fe?")) {
       currentCases = [...SANTA_FE_SAMPLE_CASES];
       localStorage.setItem('crm_local_cases', JSON.stringify(currentCases));
       
@@ -638,7 +660,7 @@ if (btnSeedDemoData) {
             }]);
           }
           btnSeedDemoData.innerHTML = '<i class="fas fa-check"></i> ¡Sincronizado!';
-          setTimeout(() => btnSeedDemoData.innerHTML = '<i class="fas fa-magic"></i> Cargar Casos Demo (SF)', 2500);
+          setTimeout(() => btnSeedDemoData.innerHTML = '<i class="fas fa-database"></i> Restablecer Datos Demo', 2500);
         }
       } catch (err) {
         console.log("Seed local guardado:", err);

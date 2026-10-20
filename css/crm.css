@@ -1206,14 +1206,298 @@ body.dark-mode .modal-tab-btn.active {
   50% { opacity: 0.6; }
 }
 
-/* Responsive */
+/* ==========================================================================
+   RESPONSIVE DESIGN SYSTEM
+   ========================================================================== */
+
+/* Backdrop para mobile */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 31, 53, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 998;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.sidebar-backdrop.active {
+  display: block;
+  opacity: 1;
+}
+
+.mobile-only {
+  display: none !important;
+}
+
+/* Pantallas medianas y tablets (<= 1024px) */
+@media (max-width: 1024px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  .chart-card-lg, .chart-card-sm, .chart-card-full {
+    grid-column: span 1;
+  }
+  .calc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tablets y Smartphones (<= 900px) */
 @media (max-width: 900px) {
+  .mobile-only {
+    display: inline-flex !important;
+  }
+
   .sidebar {
     position: fixed;
-    left: -270px;
-    height: 100%;
+    top: 0;
+    left: -290px;
+    width: 280px;
+    height: 100vh;
+    z-index: 999;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
   .sidebar.open {
     left: 0;
+  }
+
+  .topbar {
+    padding: 0 16px;
+    height: 64px;
+    gap: 12px;
+  }
+
+  .topbar-left {
+    gap: 8px;
+  }
+
+  .search-box input {
+    font-size: 0.82rem;
+    padding: 8px 12px 8px 34px;
+  }
+
+  .search-box i {
+    left: 10px;
+    font-size: 0.85rem;
+  }
+
+  .content-area {
+    padding: 18px 16px;
+  }
+
+  .view-header {
+    margin-bottom: 18px;
+  }
+
+  .view-title-group h2 {
+    font-size: 1.45rem;
+  }
+
+  .view-title-group p {
+    font-size: 0.82rem;
+  }
+
+  /* KPIs en tablet / mobile */
+  .kpis-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .kpi-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .kpi-icon-box {
+    width: 42px;
+    height: 42px;
+    font-size: 1.2rem;
+  }
+
+  .kpi-value {
+    font-size: 1.35rem;
+  }
+
+  .kpi-label {
+    font-size: 0.72rem;
+  }
+
+  /* Kanban horizontal touch scrolling */
+  .kanban-board {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    gap: 14px;
+    padding-bottom: 16px;
+  }
+
+  .kanban-column {
+    min-width: 270px;
+    width: 270px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    max-height: calc(100vh - 210px);
+  }
+
+  /* Generador de escritos */
+  #view-escritos > div {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Modal responsive */
+  .modal-content {
+    max-width: 96vw;
+    max-height: 94vh;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-header {
+    padding: 14px 18px;
+  }
+
+  .modal-header h3 {
+    font-size: 1.15rem;
+  }
+
+  .modal-tabs {
+    padding: 0 14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    gap: 6px;
+  }
+
+  .modal-tab-btn {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+
+  .modal-footer {
+    padding: 12px 16px;
+  }
+
+  /* Agenda Calendar en mobile */
+  .calendar-card {
+    padding: 14px;
+  }
+
+  .calendar-nav h3 {
+    font-size: 1.1rem;
+  }
+
+  .calendar-grid-cells {
+    gap: 4px;
+  }
+
+  .cal-cell {
+    min-height: 70px;
+    padding: 4px;
+  }
+
+  .cal-day-num {
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+  }
+
+  .cal-event-pill {
+    font-size: 0.62rem;
+    padding: 2px 4px;
+  }
+}
+
+/* Smartphones pequeños (<= 640px) */
+@media (max-width: 640px) {
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .topbar-right {
+    gap: 8px;
+  }
+
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .btn {
+    padding: 7px 12px;
+    font-size: 0.82rem;
+  }
+
+  .table-filters-bar {
+    padding: 12px 14px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters-group select {
+    width: 100%;
+  }
+
+  .notif-dropdown {
+    right: 10px;
+    width: calc(100vw - 20px);
+    max-width: 340px;
+  }
+
+  .kpis-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .kpi-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .kpi-icon-box {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .kpi-value {
+    font-size: 1.25rem;
+  }
+
+  /* Grids en modales en mobile */
+  .modal-body div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tabla de finanzas barra superior */
+  #view-finanzas .table-card > div:first-child {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  #view-finanzas .table-card > div:first-child input {
+    max-width: 100% !important;
+    width: 100%;
   }
 }
